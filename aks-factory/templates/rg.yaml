@@ -1,0 +1,13 @@
+{{- range $group := .Values.participantGroups }}
+{{- range $member := $group.members }}
+---
+apiVersion: azure.crossplane.io/v1alpha3
+kind: ResourceGroup
+metadata:
+  name: {{ $member }}-aks-crossplane-rg
+spec:
+  location: {{ $group.region }}
+  providerConfigRef:
+    name: {{ $group.name }}-azure
+{{- end }}  
+{{- end }} 

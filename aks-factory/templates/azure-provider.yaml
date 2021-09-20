@@ -1,0 +1,23 @@
+{{- range $group := .Values.participantGroups }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $group.name }}-azure-credentials
+  namespace: crossplane-system
+type: Opaque
+data:
+  credentials: {{ $group.azureSP }}
+---
+apiVersion: azure.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: {{ $group.name }}-azure
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: {{ $group.name }}-azure-credentials
+      key: credentials 
+{{- end }} 

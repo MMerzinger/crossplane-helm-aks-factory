@@ -1,0 +1,25 @@
+{{- range $group := .Values.participantGroups }}
+{{- range $member := $group.members }}
+---
+apiVersion: compute.azure.crossplane.io/v1alpha3
+kind: AKSCluster
+metadata:
+  name: {{ $member }}-aks-crossplane
+spec:
+  resourceGroupNameRef:
+    name: {{ $member }}-aks-crossplane-rg
+  vnetSubnetIDRef:
+    name: {{ $member }}-aks-crossplane-vnet-sub
+  location: {{ $group.region }}
+  version: {{ $group.aksVersion }}
+  nodeCount: {{ $group.nodeCount }}
+  nodeVMSize: Standard_B2s
+  dnsNamePrefix: {{ $member }}-aks-crossplane
+  disableRBAC: false
+  providerConfigRef:
+    name: {{ $group.name }}-azure
+  writeConnectionSecretToRef:
+    namespace: crossplane-system
+    name: {{ $member }}-aks-crossplane
+{{- end }}  
+{{- end }} 

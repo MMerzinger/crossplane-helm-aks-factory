@@ -1,0 +1,33 @@
+{{- range $group := .Values.participantGroups }}
+{{- range $member := $group.members }}
+---
+apiVersion: network.azure.crossplane.io/v1alpha3
+kind: VirtualNetwork
+metadata:
+  name: {{ $member }}-aks-crossplane-vnet
+spec:
+  resourceGroupNameRef:
+    name: {{ $member }}-aks-crossplane-rg
+  location: {{ $group.region }}
+  properties:
+    addressSpace:
+      addressPrefixes:
+        - 10.2.0.0/16
+  providerConfigRef:
+    name: {{ $group.name }}-azure
+---
+apiVersion: network.azure.crossplane.io/v1alpha3
+kind: Subnet
+metadata:
+  name: {{ $member }}-aks-crossplane-vnet-sub
+spec:
+  resourceGroupNameRef:
+    name: {{ $member }}-aks-crossplane-rg
+  virtualNetworkNameRef:
+    name: {{ $member }}-aks-crossplane-vnet
+  properties:
+    addressPrefix: 10.2.0.0/24
+  providerConfigRef:
+    name: {{ $group.name }}-azure
+{{- end }}  
+{{- end }} 
